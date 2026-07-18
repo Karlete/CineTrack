@@ -1,7 +1,6 @@
 package com.cinetrack.entities;
 
 import jakarta.persistence.*;
-import org.jspecify.annotations.Nullable;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
@@ -93,12 +92,12 @@ public class User implements UserDetails {
      */
 
     @Override
-    public boolean equals(Object object){
-        if(this == object){
+    public boolean equals(Object object) {
+        if (this == object) {
             return true;
         }
 
-        if(!(object instanceof User otherUser)){
+        if (!(object instanceof User otherUser)) {
             return false;
         }
 
@@ -111,7 +110,7 @@ public class User implements UserDetails {
      */
 
     @Override
-    public int hashCode(){
+    public int hashCode() {
         return getClass().hashCode();
     }
 

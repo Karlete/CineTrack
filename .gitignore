@@ -35,3 +35,6 @@ build/
 ### Aplication properties ###
 /src/main/resources/application.properties
 /src/main/resources/cinetrack_architecture.png
+
+### MD
+cinetrack_security_jwt_resumen.md
