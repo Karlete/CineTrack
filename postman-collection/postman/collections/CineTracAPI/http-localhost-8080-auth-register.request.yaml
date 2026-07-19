@@ -1,0 +1,17 @@
+$kind: http-request
+name: http://localhost:8080/auth/register
+description: ""
+url: http://localhost:8080/auth/register
+method: GET
+body:
+  type: json
+  content: "{\r
+
+    \  \"userName\": \"karlete\",\r
+
+    \  \"email\": \"karlete@test.com\",\r
+
+    \  \"password\": \"unaPasswordSegura123\"\r
+
+    }"
+order: 1784453088676
