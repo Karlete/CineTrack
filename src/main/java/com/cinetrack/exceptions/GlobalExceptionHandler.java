@@ -41,4 +41,22 @@ public class GlobalExceptionHandler {
 
         return new ResponseEntity<>(error, HttpStatus.UNAUTHORIZED);
     }
+
+    @ExceptionHandler(TmdbApiException.class)
+    public ResponseEntity<Object> handleTmdbApiException(TmdbApiException ex) {
+        String userMessage = switch (ex.getStatus()) {
+            case TOO_MANY_REQUESTS -> "Demasiadas peticiones. Espera un poco e inténtalo de nuevo.";
+            case UNAUTHORIZED -> "Error de autenticación con el servicio externo.";
+            default -> "No se pudo conectar con el servicio de películas. Inténtalo de nuevo más tarde.";
+        };
+
+        var error = Map.of(
+                "timestamp", LocalDateTime.now(),
+                "status", HttpStatus.SERVICE_UNAVAILABLE.value(),
+                "error", "Service Unavailable",
+                "message", userMessage
+        );
+
+        return new ResponseEntity<>(error, HttpStatus.SERVICE_UNAVAILABLE);
+    }
 }

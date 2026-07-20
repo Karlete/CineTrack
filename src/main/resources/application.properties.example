@@ -24,3 +24,7 @@ logging.level.org.hibernate.type.descriptor.sql.BasicBinder=TRACE
 # ===========================
 jwt.expiration=86400000
 jwt.secret=your jwt key
+
+# TMDB Configuration
+tmdb.base-url=tmdb api url here
+tmdb.api-key=tmdb api key here
