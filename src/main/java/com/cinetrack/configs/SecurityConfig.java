@@ -21,7 +21,7 @@ public class SecurityConfig {
     }
 
     @Bean
-    public SecurityFilterChain filterChain(HttpSecurity http) {
+    public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http
                 // Disable CSRF because we use stateless JWT
                 .csrf(AbstractHttpConfigurer::disable)
@@ -33,8 +33,20 @@ public class SecurityConfig {
 
                 // Authorization rules
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/auth/**").permitAll()   // Register & Login
-                        .anyRequest().authenticated()              // Everything else requires JWT
+                        // Rutas de autenticación (API + vistas)
+                        .requestMatchers("/auth/**").permitAll()
+
+                        // Búsqueda (API + vista)
+                        .requestMatchers("/movies/search").permitAll()
+
+                        // Vistas Thymeleaf públicas
+                        .requestMatchers("/", "/login", "/register", "/search", "/watched").permitAll()
+
+                        // Recursos estáticos
+                        .requestMatchers("/css/**", "/js/**", "/images/**").permitAll()
+
+                        // Todo lo demás requiere autenticación
+                        .anyRequest().authenticated()
                 )
 
                 // Add JWT filter before default authentication

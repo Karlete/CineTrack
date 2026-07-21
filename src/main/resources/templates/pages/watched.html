@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/layout :: head}">
+    <!-- Title is passed from the controller -->
+</head>
+
+<body>
+<!-- Navbar -->
+<nav th:replace="~{fragments/layout :: navbar}"></nav>
+
+<main class="watched-container">
+    <h1>My Watched Movies</h1>
+
+    <div id="results" class="results-grid">
+        <!-- Results will be loaded dynamically by JS -->
+    </div>
+</main>
+
+<!-- Scripts -->
+<script th:replace="~{fragments/layout :: api-script}"></script>
+<script th:replace="~{fragments/layout :: app-script}"></script>
+<script th:src="@{/js/watched.js}"></script>
+</body>
+</html>
