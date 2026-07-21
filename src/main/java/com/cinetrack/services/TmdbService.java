@@ -1,8 +1,10 @@
 package com.cinetrack.services;
 
 import com.cinetrack.dto.MovieSearchResultDto;
+import com.cinetrack.dto.tmdb.TmdbMovieDetailsDto;
 import com.cinetrack.dto.tmdb.TmdbMovieDto;
 import com.cinetrack.dto.tmdb.TmdbSearchResponse;
+import com.cinetrack.exceptions.MovieNotFoundException;
 import com.cinetrack.exceptions.TmdbApiException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -82,5 +84,37 @@ public class TmdbService {
                 year,
                 dto.overview()
         );
+    }
+
+    /**
+     * Gets detailed information for a specific movie by its TMDB ID.
+     */
+    public TmdbMovieDetailsDto getMovieDetails(Long tmdbId) {
+        try {
+            return tmdbRestClient
+                    .get()
+                    .uri("/movie/{tmdbId}?language=es-ES", tmdbId)
+                    .retrieve()
+                    .onStatus(HttpStatusCode::is4xxClientError, (request, response) -> {
+                        if (response.getStatusCode() == HttpStatus.NOT_FOUND) {
+                            throw new MovieNotFoundException("Movie with TMDB ID " + tmdbId + " not found");
+                        }
+                        throw new TmdbApiException("TMDB client error: " + response.getStatusCode(),
+                                HttpStatus.valueOf(response.getStatusCode().value()));
+                    })
+                    .onStatus(HttpStatusCode::is5xxServerError, (request, response) -> {
+                        throw new TmdbApiException("TMDB server error", HttpStatus.SERVICE_UNAVAILABLE);
+                    })
+                    .body(TmdbMovieDetailsDto.class);
+
+        } catch (ResourceAccessException e) {
+            logger.warn("Network error fetching movie details for tmdbId: {}", tmdbId, e);
+            throw new TmdbApiException("Network error connecting to TMDB", HttpStatus.SERVICE_UNAVAILABLE);
+        } catch (TmdbApiException | MovieNotFoundException e) {
+            throw e;
+        } catch (Exception e) {
+            logger.error("Unexpected error fetching movie details for tmdbId: {}", tmdbId, e);
+            throw new TmdbApiException("Unexpected error", HttpStatus.INTERNAL_SERVER_ERROR);
+        }
     }
 }
