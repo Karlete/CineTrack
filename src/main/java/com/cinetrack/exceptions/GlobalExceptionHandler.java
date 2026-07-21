@@ -59,4 +59,15 @@ public class GlobalExceptionHandler {
 
         return new ResponseEntity<>(error, HttpStatus.SERVICE_UNAVAILABLE);
     }
+
+    @ExceptionHandler(InvalidSearchQueryException.class)
+    public ResponseEntity<Object> handleInvalidSearchQuery(InvalidSearchQueryException ex) {
+        var error = Map.of(
+                "timestamp", LocalDateTime.now(),
+                "status", HttpStatus.BAD_REQUEST.value(),
+                "error", "Bad Request",
+                "message", ex.getMessage()
+        );
+        return new ResponseEntity<>(error, HttpStatus.BAD_REQUEST);
+    }
 }
