@@ -91,6 +91,13 @@
 			<artifactId>spring-boot-starter-webmvc-test</artifactId>
 			<scope>test</scope>
 		</dependency>
+		<!-- Declarado explícito (aunque ya llega transitivo vía los starters -test) para que
+			 maven-dependency-plugin pueda resolver su ruta y usarla como -javaagent en Surefire -->
+		<dependency>
+			<groupId>org.mockito</groupId>
+			<artifactId>mockito-core</artifactId>
+			<scope>test</scope>
+		</dependency>
 
 		<!-- JWT (jjwt: api = interfaces used at compile time, impl/jackson = runtime only) -->
 		<dependency>
@@ -138,6 +145,29 @@
 						</configuration>
 					</execution>
 				</executions>
+			</plugin>
+			<!-- Expone la ruta de cada dependencia como propiedad ${groupId:artifactId:type},
+				 necesario para poder referenciar el jar de mockito-core mas abajo -->
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-dependency-plugin</artifactId>
+				<executions>
+					<execution>
+						<goals>
+							<goal>properties</goal>
+						</goals>
+					</execution>
+				</executions>
+			</plugin>
+			<!-- Mockito (mock maker inline, por defecto desde Mockito 5) necesita instrumentacion
+				 via Java agent. Sin esto, se auto-adjunta dinamicamente en tiempo de ejecucion,
+				 lo cual el propio Mockito advierte que dejara de funcionar en futuras versiones del JDK. -->
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-surefire-plugin</artifactId>
+				<configuration>
+					<argLine>-javaagent:${org.mockito:mockito-core:jar}</argLine>
+				</configuration>
 			</plugin>
 		</plugins>
 	</build>
