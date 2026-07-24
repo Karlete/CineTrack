@@ -39,6 +39,8 @@ public class SecurityConfig {
                         // Búsqueda (API + vista)
                         .requestMatchers("/movies/search").permitAll()
 
+                        .requestMatchers("/movies/popular").permitAll()
+
                         // Vistas Thymeleaf públicas
                         .requestMatchers("/", "/login", "/register", "/search", "/watched").permitAll()
 

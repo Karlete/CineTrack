@@ -12,8 +12,8 @@ document.addEventListener('DOMContentLoaded', function () {
         if (token) {
             // User is logged in
             authSection.innerHTML = `
-                <a href="/watched">My Watched</a>
-                <a href="#" id="logout-link">Logout</a>
+                <a href="/watched">Mis vistas</a>
+                <a href="#" id="logout-link">Cerrar sesión</a>
             `;
 
             // Logout handler
@@ -25,8 +25,8 @@ document.addEventListener('DOMContentLoaded', function () {
         } else {
             // User is not logged in
             authSection.innerHTML = `
-                <a href="/login">Login</a>
-                <a href="/register">Register</a>
+                <a href="/login">Iniciar sesión</a>
+                <a href="/register">Registrarse</a>
             `;
         }
     }
@@ -67,6 +67,9 @@ document.addEventListener('DOMContentLoaded', function () {
             // Not logged in
             heroUser.style.display = 'none';
             if (recentWatched) recentWatched.style.display = 'none';
+
+            // Cargar pósters populares de fondo para invitados
+            loadPopularMovies();
         }
     }
 });
@@ -106,6 +109,9 @@ async function loadRecentWatched() {
             .sort((a, b) => new Date(b.watchedAt) - new Date(a.watchedAt))
             .slice(0, 5);
 
+        // Render background
+        renderHeroBackdrop(recent);
+
         container.innerHTML = recent.map(movie => `
             <div class="movie-card" data-tmdb-id="${movie.tmdbId}">
                 <img src="https://image.tmdb.org/t/p/w200${movie.posterPath}" 
@@ -117,7 +123,45 @@ async function loadRecentWatched() {
         `).join('');
 
     } catch (error) {
-        console.warn('Failed to load recent watched movies:', error);
+        console.warn('Error al cargar películas vistas recientemente:', error);
         container.innerHTML = '<p>No se pudieron cargar las películas recientes.</p>';
+    }
+}
+
+/**
+ * Function to render hero backdrop
+ */
+function renderHeroBackdrop(movies) {
+    const backdrop = document.getElementById('hero-backdrop-posters');
+    if (!backdrop || movies.length === 0) return;
+
+    const validPosters = movies.filter(m => m.posterPath);
+    if (validPosters.length === 0) return;
+
+    backdrop.innerHTML = validPosters.map(m =>
+        `<img src="https://image.tmdb.org/t/p/w200${m.posterPath}" alt="">`
+    ).join('');
+
+    backdrop.classList.add('visible');
+}
+
+/**
+ * Loads popular movies from TMDB and renders them as hero backdrop for guests.
+ * No sorting needed — TMDB already returns them ordered by popularity.
+ */
+async function loadPopularMovies() {
+    try {
+        const movies = await api.get('/movies/popular');
+
+        if (!movies || movies.length === 0) return;
+
+        // Tomamos los primeros 6 tal cual vienen de TMDB
+        const popular = movies.slice(0, 6);
+
+        renderHeroBackdrop(popular);
+
+    } catch (error) {
+        console.warn('Error al cargar películas populares:', error);
+        // No rompemos la home si TMDB falla
     }
 }

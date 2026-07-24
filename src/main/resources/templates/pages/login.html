@@ -5,38 +5,50 @@
 </head>
 
 <body>
+<!-- Icon sprite -->
+<svg th:replace="~{fragments/layout :: icon-sprite}"></svg>
 <!-- Navbar -->
 <nav th:replace="~{fragments/layout :: navbar}"></nav>
 
 <main class="login-container">
-    <h1>Iniciar Sesión</h1>
+    <!-- Fondo de página completa -->
+    <div class="login-backdrop" aria-hidden="true"></div>
 
-    <form id="login-form">
-        <div>
-            <label for="username">Nombre de usuario</label>
-            <input type="text" id="username" required>
+    <!-- Tarjeta de login -->
+    <div class="auth-card">
+        <div class="brand-title">
+            <img src="/images/cinetrack-icon-64.png" alt="" class="brand-icon">
+            <h1>CineTrack</h1>
         </div>
+        <h2>Iniciar sesión</h2>
 
-        <div>
-            <label for="password">Contraseña</label>
-            <input type="password" id="password" required>
-        </div>
+        <form id="login-form">
+            <div class="form-group">
+                <label for="username">Nombre de usuario</label>
+                <input type="text" id="username" required>
+            </div>
 
-        <button type="submit">Iniciar Sesión</button>
-    </form>
+            <div class="form-group">
+                <label for="password">Contraseña</label>
+                <input type="password" id="password" required>
+            </div>
 
-    <div id="error-message" class="error"></div>
-    <div id="success-message" class="success"></div>
+            <button type="submit" class="btn-primary">Iniciar Sesión</button>
+        </form>
 
-    <p>
-        ¿No tienes cuenta?
-        <a href="/register">Regístrate aquí</a>
-    </p>
+        <div id="error-message" class="error"></div>
+        <div id="success-message" class="success"></div>
+
+        <p class="auth-footer-link">
+            ¿No tienes cuenta? <a href="/register">Regístrate aquí</a>
+        </p>
+    </div>
 </main>
 
 <!-- Scripts -->
 <script th:replace="~{fragments/layout :: api-script}"></script>
 <script th:replace="~{fragments/layout :: app-script}"></script>
 <script th:src="@{/js/login.js}"></script>
+<footer th:replace="~{fragments/layout :: footer}"></footer>
 </body>
 </html>

@@ -10,18 +10,18 @@ document.addEventListener('DOMContentLoaded', loadWatchedMovies);
 async function loadWatchedMovies() {
     // Check if user is logged in before attempting to load watched movies
     if (!localStorage.getItem('token')) {
-        localStorage.setItem('flashMessage', 'You need to log in to see your watched movies.');
+        localStorage.setItem('flashMessage', 'Necesitas hacer login para ver tus películas vistas.');
         window.location.href = '/login';
         return;
     }
 
-    resultsContainer.innerHTML = '<p class="loading">Loading your watched movies...</p>';
+    resultsContainer.innerHTML = '<p class="loading">Cargando tus películas vistas...</p>';
 
     try {
         const movies = await api.get('/movies/watched');
 
         if (movies.length === 0) {
-            resultsContainer.innerHTML = '<p>You have not marked any movies as watched yet.</p>';
+            resultsContainer.innerHTML = '<p>No has marcado ninguna película como vista.</p>';
             return;
         }
 
@@ -32,10 +32,10 @@ async function loadWatchedMovies() {
                      alt="${movie.title}" 
                      onerror="this.src='/images/no-poster.jpg'">
                 <h3>${movie.title}</h3>
-                <p>${movie.year || 'No date'}</p>
-                <p class="watched-date">Watched: ${new Date(movie.watchedAt).toLocaleDateString()}</p>
+                <p>${movie.year || 'Sin fecha'}</p>
+                <p class="watched-date">Vista el: ${new Date(movie.watchedAt).toLocaleDateString()}</p>
                 <button class="remove-watched-btn" data-tmdb-id="${movie.tmdbId}">
-                    Remove from watched
+                    Quitar de vistas
                 </button>
             </div>
         `).join('');
@@ -60,10 +60,10 @@ resultsContainer.addEventListener('click', async function (e) {
 
         // If no cards left, show empty message
         if (resultsContainer.children.length === 0) {
-            resultsContainer.innerHTML = '<p>You have not marked any movies as watched yet.</p>';
+            resultsContainer.innerHTML = '<p>No has marcado ninguna película como vista.</p>';
         }
 
     } catch (error) {
-        alert('Error removing from watched: ' + error.message);
+        alert('Error al quitar de vistas: ' + error.message);
     }
 });

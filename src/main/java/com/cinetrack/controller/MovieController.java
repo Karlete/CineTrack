@@ -56,4 +56,10 @@ public class MovieController {
         List<WatchedMovieDto> watched = movieService.getWatchedMovies(user);
         return ResponseEntity.ok(watched);
     }
+
+    @GetMapping("/popular")
+    public ResponseEntity<List<MovieSearchResultDto>> getPopularMovies() {
+        List<MovieSearchResultDto> results = tmdbService.getPopularMovies();
+        return ResponseEntity.ok(results);
+    }
 }

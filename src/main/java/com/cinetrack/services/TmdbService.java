@@ -117,4 +117,44 @@ public class TmdbService {
             throw new TmdbApiException("Unexpected error", HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
+
+    /**
+     * Fetches the first page of popular movies from TMDB and returns results in our API format.
+     */
+    public List<MovieSearchResultDto> getPopularMovies() {
+        try {
+            TmdbSearchResponse response = tmdbRestClient
+                    .get()
+                    .uri("/movie/popular?language=es-ES&page=1")
+                    .retrieve()
+                    .onStatus(HttpStatusCode::is4xxClientError, (request, response1) -> {
+                        throw new TmdbApiException("TMDB client error: " + response1.getStatusCode(),
+                                HttpStatus.valueOf(response1.getStatusCode().value()));
+                    })
+                    .onStatus(HttpStatusCode::is5xxServerError, (request, response1) -> {
+                        throw new TmdbApiException("TMDB server error", HttpStatus.SERVICE_UNAVAILABLE);
+                    })
+                    .body(TmdbSearchResponse.class);
+
+            if (response == null || response.results() == null) {
+                return List.of();
+            }
+
+            return response.results().stream()
+                    .map(this::toMovieSearchResult)
+                    .toList();
+
+        } catch (ResourceAccessException e) {
+            logger.warn("Network error connecting to TMDB for popular movies", e);
+            throw new TmdbApiException("Network error connecting to TMDB", HttpStatus.SERVICE_UNAVAILABLE);
+        } catch (TmdbApiException e) {
+            logger.warn("TMDB API error for popular movies: {} - {}", e.getStatus(), e.getMessage());
+            throw e;
+        } catch (Exception e) {
+            logger.error("Unexpected error fetching popular movies", e);
+            throw new TmdbApiException("Unexpected error", HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
+
 }

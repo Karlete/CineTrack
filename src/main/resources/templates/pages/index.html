@@ -5,30 +5,42 @@
 </head>
 
 <body>
+<!-- Icon sprite -->
+<svg th:replace="~{fragments/layout :: icon-sprite}"></svg>
 <!-- Navbar -->
 <nav th:replace="~{fragments/layout :: navbar}"></nav>
 
 <main class="home-container">
     <div class="hero">
-        <h1>CineTrack</h1>
-        <p class="tagline">Tu diario personal de películas vistas</p>
-        <p class="description">
-            Registra qué películas has visto, busca nuevas películas
-            y lleva un seguimiento de tu cine personal.
-        </p>
+        <!-- Capas de fondo (puramente decorativas) -->
+        <div class="hero-backdrop" aria-hidden="true"></div>
+        <div class="hero-backdrop-posters" id="hero-backdrop-posters" aria-hidden="true"></div>
 
-        <!-- Acciones para visitantes (sin login) -->
-        <div id="hero-guest" class="hero-actions">
-            <a href="/search" class="btn-primary">Buscar películas</a>
-            <a href="/login" class="btn-secondary">Iniciar sesión</a>
-            <a href="/register" class="btn-secondary">Crear cuenta</a>
-        </div>
+        <!-- Contenido por encima del fondo -->
+        <div class="hero-content">
+            <div class="brand-title">
+                <img src="/images/cinetrack-icon-64.png" alt="" class="brand-icon">
+                <h1>CineTrack</h1>
+            </div>
+            <p class="tagline">Tu diario personal de películas vistas</p>
+            <p class="description">
+                Registra qué películas has visto, busca nuevas películas
+                y lleva un seguimiento de tu cine personal.
+            </p>
 
-        <!-- Acciones para usuarios logueados -->
-        <div id="hero-user" class="hero-actions" style="display:none;">
-            <p id="hero-greeting"></p>
-            <a href="/search" class="btn-primary">Buscar películas</a>
-            <a href="/watched" class="btn-secondary">Mis vistas</a>
+            <!-- Acciones para visitantes (sin login) -->
+            <div id="hero-guest" class="hero-actions">
+                <a href="/search" class="btn-primary">Buscar películas</a>
+                <a href="/login" class="btn-secondary">Iniciar sesión</a>
+                <a href="/register" class="btn-secondary">Crear cuenta</a>
+            </div>
+
+            <!-- Acciones para usuarios logueados -->
+            <div id="hero-user" class="hero-actions" style="display:none;">
+                <p id="hero-greeting"></p>
+                <a href="/search" class="btn-primary">Buscar películas</a>
+                <a href="/watched" class="btn-secondary">Mis vistas</a>
+            </div>
         </div>
     </div>
 
@@ -37,17 +49,32 @@
         <h2>Cómo funciona CineTrack</h2>
         <div class="steps">
             <div class="step">
-                <span class="step-number">1</span>
+                <div class="step-icon">
+                    <svg class="icon icon--lg">
+                        <use href="#icon-search"></use>
+                    </svg>
+                    <span class="step-number">1</span>
+                </div>
                 <h3>Busca</h3>
                 <p>Encuentra cualquier película usando la integración con TMDB.</p>
             </div>
             <div class="step">
-                <span class="step-number">2</span>
+                <div class="step-icon">
+                    <svg class="icon icon--lg">
+                        <use href="#icon-stamp"></use>
+                    </svg>
+                    <span class="step-number">2</span>
+                </div>
                 <h3>Marca</h3>
                 <p>Marca películas como vistas con un solo clic.</p>
             </div>
             <div class="step">
-                <span class="step-number">3</span>
+                <div class="step-icon">
+                    <svg class="icon icon--lg">
+                        <use href="#icon-list"></use>
+                    </svg>
+                    <span class="step-number">3</span>
+                </div>
                 <h3>Sigue tu progreso</h3>
                 <p>Lleva tu lista personal de vistas siempre organizada.</p>
             </div>
@@ -66,5 +93,8 @@
 <!-- Scripts -->
 <script th:replace="~{fragments/layout :: api-script}"></script>
 <script th:replace="~{fragments/layout :: app-script}"></script>
+
+<footer th:replace="~{fragments/layout :: footer}"></footer>
+
 </body>
 </html>

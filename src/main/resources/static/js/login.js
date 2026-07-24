@@ -16,7 +16,7 @@ if (flashMessage) {
 }
 
 // 2. Handle form submission
-document.getElementById('login-form').addEventListener('submit', async function(e) {
+document.getElementById('login-form').addEventListener('submit', async function (e) {
 
     // Prevent default form submission (page reload)
     e.preventDefault();
@@ -31,7 +31,7 @@ document.getElementById('login-form').addEventListener('submit', async function(
 
     // Basic client-side validation
     if (!username || !password) {
-        errorDiv.textContent = 'Username and password are required';
+        errorDiv.textContent = 'Nombre de usuario y contraseña requeridos';
         return;
     }
 
@@ -51,7 +51,7 @@ document.getElementById('login-form').addEventListener('submit', async function(
         // Check if the HTTP status is successful (2xx)
         if (!response.ok) {
             const errorData = await response.json();
-            throw new Error(errorData.message || 'Login failed');
+            throw new Error(errorData.message || 'Error al iniciar sesión');
         }
 
         // Login successful

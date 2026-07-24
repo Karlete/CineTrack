@@ -5,25 +5,42 @@
 </head>
 
 <body>
+<!-- Icon sprite -->
+<svg th:replace="~{fragments/layout :: icon-sprite}"></svg>
 <!-- Navbar -->
 <nav th:replace="~{fragments/layout :: navbar}"></nav>
 
 <main class="search-container">
-    <h1>Buscar Películas</h1>
+    <div class="search-hero">
+        <div class="search-hero-backdrop" aria-hidden="true"></div>
 
-    <div class="search-bar">
-        <input type="text" id="search-input" placeholder="Busca una película...">
-        <button id="search-button">Buscar</button>
+        <div class="search-hero-content">
+            <h1>Buscar Películas</h1>
+            <div class="search-bar">
+                <svg class="icon search-bar-icon">
+                    <use href="#icon-search"></use>
+                </svg>
+                <input type="text" id="search-input" placeholder="Busca una película...">
+                <button id="search-button" class="btn-primary">Buscar</button>
+            </div>
+        </div>
     </div>
 
-    <div id="results" class="results-grid">
-        <!-- Los resultados se insertan aquí dinámicamente desde JS -->
+    <div id="search-placeholder" class="search-placeholder">
+        <svg class="icon icon--xl">
+            <use href="#icon-search"></use>
+        </svg>
+        <p>Busca tu próxima película favorita</p>
     </div>
+
+    <div id="results" class="results-grid"></div>
 </main>
 
 <!-- Scripts -->
 <script th:replace="~{fragments/layout :: api-script}"></script>
 <script th:replace="~{fragments/layout :: app-script}"></script>
 <script th:src="@{/js/search.js}"></script>
+<footer th:replace="~{fragments/layout :: footer}"></footer>
+
 </body>
 </html>

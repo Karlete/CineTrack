@@ -18,19 +18,21 @@ searchInput.addEventListener('keypress', function (e) {
 async function performSearch() {
     const query = searchInput.value.trim();
 
+    document.getElementById('search-placeholder').style.display = 'none';
+
     if (!query) {
-        resultsContainer.innerHTML = '<p class="error">Please enter a search term.</p>';
+        resultsContainer.innerHTML = '<p class="error">Por favor introduce un término de búsqueda.</p>';
         return;
     }
 
-    resultsContainer.innerHTML = '<p class="loading">Searching...</p>';
+    resultsContainer.innerHTML = '<p class="loading">Buscando...</p>';
 
     try {
         // Use the centralized api helper
         const movies = await api.get(`/movies/search?query=${encodeURIComponent(query)}`);
 
         if (movies.length === 0) {
-            resultsContainer.innerHTML = '<p>No results found.</p>';
+            resultsContainer.innerHTML = '<p>No se encontraron resultados.</p>';
             return;
         }
 
@@ -41,9 +43,9 @@ async function performSearch() {
                      alt="${movie.title}" 
                      onerror="this.src='/images/no-poster.jpg'">
                 <h3>${movie.title}</h3>
-                <p>${movie.year || 'No date'}</p>
+                <p>${movie.year || 'Sin fecha'}</p>
                 <button class="mark-watched-btn" data-tmdb-id="${movie.tmdbId}">
-                    Mark as watched
+                    Marcar como vista
                 </button>
             </div>
         `).join('');
@@ -62,7 +64,7 @@ resultsContainer.addEventListener('click', async function (e) {
 
     // Check if user is logged in before attempting action
     if (!localStorage.getItem('token')) {
-        localStorage.setItem('flashMessage', 'You need to log in to save movies.');
+        localStorage.setItem('flashMessage', 'Tienes que iniciar sesión para ver tus películas vistas.');
         window.location.href = '/login';
         return;
     }
@@ -71,10 +73,10 @@ resultsContainer.addEventListener('click', async function (e) {
         await api.post(`/movies/${tmdbId}/watched`);
 
         // Update button UI
-        button.textContent = '✓ Watched';
+        button.textContent = '✓ Vista';
         button.disabled = true;
 
     } catch (error) {
-        alert('Error marking as watched: ' + error.message);
+        alert('Error marcando como vista: ' + error.message);
     }
 });

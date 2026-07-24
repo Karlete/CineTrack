@@ -9,10 +9,16 @@
 <nav th:replace="~{fragments/layout :: navbar}"></nav>
 
 <main class="watched-container">
-    <h1>My Watched Movies</h1>
+    <!-- Fondo de página completa -->
+    <div class="watched-backdrop" aria-hidden="true"></div>
 
-    <div id="results" class="results-grid">
-        <!-- Results will be loaded dynamically by JS -->
+    <!-- Contenido real, por encima -->
+    <div class="watched-content">
+        <h1>Mis Películas Vistas</h1>
+
+        <div id="results" class="results-grid">
+            <!-- Results will be loaded dynamically by JS -->
+        </div>
     </div>
 </main>
 
@@ -20,5 +26,7 @@
 <script th:replace="~{fragments/layout :: api-script}"></script>
 <script th:replace="~{fragments/layout :: app-script}"></script>
 <script th:src="@{/js/watched.js}"></script>
+<footer th:replace="~{fragments/layout :: footer}"></footer>
+
 </body>
 </html>
