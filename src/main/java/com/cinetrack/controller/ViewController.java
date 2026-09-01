@@ -4,15 +4,21 @@ import com.cinetrack.dto.MovieDetailDto;
 import com.cinetrack.exceptions.MovieNotFoundException;
 import com.cinetrack.exceptions.TmdbApiException;
 import com.cinetrack.services.TmdbService;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
 import org.springframework.web.servlet.ModelAndView;
 
 @Controller
 public class ViewController {
+
+    private static final Logger logger = LoggerFactory.getLogger(ViewController.class);
 
     private final TmdbService tmdbService;
 
@@ -64,15 +70,33 @@ public class ViewController {
             mav.addObject("movie", movie);
             return mav;
         } catch (MovieNotFoundException e) {
-            ModelAndView mav = new ModelAndView("pages/movie-detail-error", HttpStatus.NOT_FOUND);
-            mav.addObject("title", "Película no encontrada - CineTrack");
-            mav.addObject("message", "No hemos encontrado esta película.");
-            return mav;
+            return movieErrorView(HttpStatus.NOT_FOUND, "Película no encontrada - CineTrack",
+                    "No hemos encontrado esta película.");
         } catch (TmdbApiException e) {
-            ModelAndView mav = new ModelAndView("pages/movie-detail-error", HttpStatus.SERVICE_UNAVAILABLE);
-            mav.addObject("title", "Error - CineTrack");
-            mav.addObject("message", "No se pudo conectar con el servicio de películas. Inténtalo de nuevo más tarde.");
-            return mav;
+            logger.warn("TMDB error rendering movie detail for tmdbId {}: {} - {}",
+                    tmdbId, e.getStatus(), e.getMessage());
+            return movieErrorView(HttpStatus.SERVICE_UNAVAILABLE, "Error - CineTrack",
+                    "No se pudo conectar con el servicio de películas. Inténtalo de nuevo más tarde.");
         }
+    }
+
+    /**
+     * A non-numeric tmdbId (e.g. /movie/abc) fails path variable conversion before
+     * movieDetail() ever runs, so its try/catch never gets a chance. A handler local
+     * to this controller (not the REST GlobalExceptionHandler, which would answer
+     * with JSON here) keeps this on the same "view controller renders its own error
+     * view" contract as the rest of this route.
+     */
+    @ExceptionHandler(MethodArgumentTypeMismatchException.class)
+    public ModelAndView handleInvalidTmdbId() {
+        return movieErrorView(HttpStatus.NOT_FOUND, "Película no encontrada - CineTrack",
+                "No hemos encontrado esta película.");
+    }
+
+    private ModelAndView movieErrorView(HttpStatus status, String title, String message) {
+        ModelAndView mav = new ModelAndView("pages/movie-detail-error", status);
+        mav.addObject("title", title);
+        mav.addObject("message", message);
+        return mav;
     }
 }
