@@ -259,6 +259,16 @@ nav a:hover {
     border-color: var(--color-primary);
 }
 
+.movie-card-link {
+    /* No display override needed: .movie-card img/h3 are descendant selectors,
+       so they apply the same whether or not this <a> sits in between. Deliberately
+       NOT using display:contents — it still has documented focus/accessibility
+       bugs in some browsers (e.g. Safari), and a plain <a> wrapping block content
+       is a long-standing, uncontroversial HTML pattern that needs no CSS trick. */
+    color: inherit;
+    text-decoration: none;
+}
+
 .movie-card img {
     width: 100%;
     height: 260px;

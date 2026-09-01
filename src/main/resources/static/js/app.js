@@ -114,10 +114,12 @@ async function loadRecentWatched() {
 
         container.innerHTML = recent.map(movie => `
             <div class="movie-card" data-tmdb-id="${movie.tmdbId}">
-                <img src="https://image.tmdb.org/t/p/w200${movie.posterPath}" 
-                     alt="${movie.title}" 
-                     onerror="this.src='/images/no-poster.jpg'">
-                <h3>${movie.title}</h3>
+                <a class="movie-card-link" href="/movie/${movie.tmdbId}">
+                    <img src="https://image.tmdb.org/t/p/w200${movie.posterPath}"
+                         alt="${movie.title}"
+                         onerror="this.src='/images/no-poster.jpg'">
+                    <h3>${movie.title}</h3>
+                </a>
                 <p>${movie.year || 'Sin fecha'}</p>
             </div>
         `).join('');
