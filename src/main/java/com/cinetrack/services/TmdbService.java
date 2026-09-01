@@ -1,7 +1,10 @@
 package com.cinetrack.services;
 
+import com.cinetrack.dto.MovieDetailDto;
 import com.cinetrack.dto.MovieSearchResultDto;
+import com.cinetrack.dto.tmdb.TmdbCrewMemberDto;
 import com.cinetrack.dto.tmdb.TmdbMovieDetailsDto;
+import com.cinetrack.dto.tmdb.TmdbMovieDetailsWithCreditsDto;
 import com.cinetrack.dto.tmdb.TmdbMovieDto;
 import com.cinetrack.dto.tmdb.TmdbSearchResponse;
 import com.cinetrack.exceptions.MovieNotFoundException;
@@ -16,6 +19,7 @@ import org.springframework.web.client.RestClient;
 
 import java.time.LocalDate;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 public class TmdbService {
@@ -67,23 +71,25 @@ public class TmdbService {
     }
 
     private MovieSearchResultDto toMovieSearchResult(TmdbMovieDto dto) {
-        Integer year = null;
-        if (dto.releaseDate() != null && !dto.releaseDate().isBlank()) {
-            try {
-                LocalDate date = LocalDate.parse(dto.releaseDate());
-                year = date.getYear();
-            } catch (Exception e) {
-                logger.warn("Failed to parse release date for TMDB movie {}: {}", dto.tmdbId(), dto.releaseDate());
-            }
-        }
-
         return new MovieSearchResultDto(
                 dto.tmdbId(),
                 dto.title(),
                 dto.posterPath(),
-                year,
+                parseYear(dto.releaseDate(), dto.tmdbId()),
                 dto.overview()
         );
+    }
+
+    private Integer parseYear(String releaseDate, Long tmdbId) {
+        if (releaseDate == null || releaseDate.isBlank()) {
+            return null;
+        }
+        try {
+            return LocalDate.parse(releaseDate).getYear();
+        } catch (Exception e) {
+            logger.warn("Failed to parse release date for TMDB movie {}: {}", tmdbId, releaseDate);
+            return null;
+        }
     }
 
     /**
@@ -116,6 +122,68 @@ public class TmdbService {
             logger.error("Unexpected error fetching movie details for tmdbId: {}", tmdbId, e);
             throw new TmdbApiException("Unexpected error", HttpStatus.INTERNAL_SERVER_ERROR);
         }
+    }
+
+    /**
+     * Gets the movie detail for a movie's detail page, with the director already
+     * resolved, in a single TMDB call (append_to_response=credits). The job field
+     * is not translated by language=es-ES (it's a fixed value from TMDB's catalog),
+     * so filtering by "Director" is safe.
+     */
+    public MovieDetailDto getMovieDetail(Long tmdbId) {
+        try {
+            TmdbMovieDetailsWithCreditsDto response = tmdbRestClient
+                    .get()
+                    .uri("/movie/{tmdbId}?language=es-ES&append_to_response=credits", tmdbId)
+                    .retrieve()
+                    .onStatus(HttpStatusCode::is4xxClientError, (request, response1) -> {
+                        if (response1.getStatusCode() == HttpStatus.NOT_FOUND) {
+                            throw new MovieNotFoundException("Movie with TMDB ID " + tmdbId + " not found");
+                        }
+                        throw new TmdbApiException("TMDB client error: " + response1.getStatusCode(),
+                                HttpStatus.valueOf(response1.getStatusCode().value()));
+                    })
+                    .onStatus(HttpStatusCode::is5xxServerError, (request, response1) -> {
+                        throw new TmdbApiException("TMDB server error", HttpStatus.SERVICE_UNAVAILABLE);
+                    })
+                    .body(TmdbMovieDetailsWithCreditsDto.class);
+
+            if (response == null) {
+                throw new TmdbApiException("TMDB returned an empty body for movie " + tmdbId,
+                        HttpStatus.SERVICE_UNAVAILABLE);
+            }
+
+            return toMovieDetailDto(response);
+
+        } catch (ResourceAccessException e) {
+            logger.warn("Network error fetching movie detail for tmdbId: {}", tmdbId, e);
+            throw new TmdbApiException("Network error connecting to TMDB", HttpStatus.SERVICE_UNAVAILABLE);
+        } catch (TmdbApiException | MovieNotFoundException e) {
+            throw e;
+        } catch (Exception e) {
+            logger.error("Unexpected error fetching movie detail for tmdbId: {}", tmdbId, e);
+            throw new TmdbApiException("Unexpected error", HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
+    private MovieDetailDto toMovieDetailDto(TmdbMovieDetailsWithCreditsDto dto) {
+        String director = null;
+        if (dto.credits() != null && dto.credits().crew() != null) {
+            String directors = dto.credits().crew().stream()
+                    .filter(member -> "Director".equals(member.job()))
+                    .map(TmdbCrewMemberDto::name)
+                    .collect(Collectors.joining(", "));
+            director = directors.isBlank() ? null : directors;
+        }
+
+        return new MovieDetailDto(
+                dto.tmdbId(),
+                dto.title(),
+                dto.posterPath(),
+                parseYear(dto.releaseDate(), dto.tmdbId()),
+                dto.overview(),
+                director
+        );
     }
 
     /**

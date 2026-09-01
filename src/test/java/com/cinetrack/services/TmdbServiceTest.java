@@ -1,7 +1,11 @@
 package com.cinetrack.services;
 
+import com.cinetrack.dto.MovieDetailDto;
 import com.cinetrack.dto.MovieSearchResultDto;
+import com.cinetrack.dto.tmdb.TmdbCreditsDto;
+import com.cinetrack.dto.tmdb.TmdbCrewMemberDto;
 import com.cinetrack.dto.tmdb.TmdbMovieDetailsDto;
+import com.cinetrack.dto.tmdb.TmdbMovieDetailsWithCreditsDto;
 import com.cinetrack.dto.tmdb.TmdbMovieDto;
 import com.cinetrack.dto.tmdb.TmdbSearchResponse;
 import com.cinetrack.exceptions.MovieNotFoundException;
@@ -24,15 +28,15 @@ import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.when;
 
 /**
- * RestClient se mockea encadenando cada eslabón de su API fluida
- * (get() -> uri() -> retrieve() -> onStatus()* -> body()), ya que no existe
- * una forma directa de mockear el resultado final con Mockito.
+ * RestClient is mocked by chaining each link of its fluent API
+ * (get() -> uri() -> retrieve() -> onStatus()* -> body()), since there is no
+ * direct way to mock the final result with Mockito.
  *
- * Los escenarios de error 4xx/5xx no se pueden disparar realmente a través de
- * onStatus() sobre un ResponseSpec mockeado (el predicado nunca se evalúa contra
- * una respuesta real). En su lugar, se simula el resultado de que el handler de
- * onStatus ya haya lanzado la excepción, haciendo que body() la lance directamente:
- * desde la perspectiva de TmdbService el efecto observable es idéntico.
+ * 4xx/5xx error scenarios can't actually be triggered through onStatus() on a
+ * mocked ResponseSpec (the predicate is never evaluated against a real
+ * response). Instead, the outcome of the onStatus handler already having
+ * thrown the exception is simulated by making body() throw it directly: from
+ * TmdbService's perspective the observable effect is identical.
  */
 @ExtendWith(MockitoExtension.class)
 class TmdbServiceTest {
@@ -195,5 +199,88 @@ class TmdbServiceTest {
                 .isInstanceOf(TmdbApiException.class)
                 .satisfies(ex -> assertThat(((TmdbApiException) ex).getStatus())
                         .isEqualTo(HttpStatus.INTERNAL_SERVER_ERROR));
+    }
+
+    // ==================== getMovieDetail ====================
+
+    /**
+     * Director resolution is pure logic (it doesn't depend on the mocked RestClient),
+     * so these cases cover that logic directly: one director, multiple directors
+     * (the Coens), no crew member with job=="Director", and null credits.
+     */
+
+    @Test
+    void getMovieDetail_singleDirector_resolvesDirectorName() {
+        TmdbCrewMemberDto director = new TmdbCrewMemberDto("David Fincher", "Director");
+        TmdbCrewMemberDto writer = new TmdbCrewMemberDto("Jim Uhls", "Screenplay");
+        TmdbCreditsDto credits = new TmdbCreditsDto(List.of(director, writer));
+        TmdbMovieDetailsWithCreditsDto response = new TmdbMovieDetailsWithCreditsDto(
+                550L, "Fight Club", "/poster.jpg", "1999-10-15", "overview", credits);
+        when(responseSpec.body(TmdbMovieDetailsWithCreditsDto.class)).thenReturn(response);
+
+        MovieDetailDto result = tmdbService.getMovieDetail(550L);
+
+        assertThat(result.tmdbId()).isEqualTo(550L);
+        assertThat(result.title()).isEqualTo("Fight Club");
+        assertThat(result.year()).isEqualTo(1999);
+        assertThat(result.director()).isEqualTo("David Fincher");
+    }
+
+    @Test
+    void getMovieDetail_multipleDirectors_joinsNamesWithComma() {
+        TmdbCrewMemberDto joel = new TmdbCrewMemberDto("Joel Coen", "Director");
+        TmdbCrewMemberDto ethan = new TmdbCrewMemberDto("Ethan Coen", "Director");
+        TmdbCreditsDto credits = new TmdbCreditsDto(List.of(joel, ethan));
+        TmdbMovieDetailsWithCreditsDto response = new TmdbMovieDetailsWithCreditsDto(
+                115L, "The Big Lebowski", "/poster.jpg", "1998-03-06", "overview", credits);
+        when(responseSpec.body(TmdbMovieDetailsWithCreditsDto.class)).thenReturn(response);
+
+        MovieDetailDto result = tmdbService.getMovieDetail(115L);
+
+        assertThat(result.director()).isEqualTo("Joel Coen, Ethan Coen");
+    }
+
+    @Test
+    void getMovieDetail_noCrewMemberIsDirector_directorIsNull() {
+        TmdbCrewMemberDto writer = new TmdbCrewMemberDto("Someone", "Screenplay");
+        TmdbCrewMemberDto photography = new TmdbCrewMemberDto("Someone Else", "Director of Photography");
+        TmdbCreditsDto credits = new TmdbCreditsDto(List.of(writer, photography));
+        TmdbMovieDetailsWithCreditsDto response = new TmdbMovieDetailsWithCreditsDto(
+                1L, "No Director Listed", null, null, "overview", credits);
+        when(responseSpec.body(TmdbMovieDetailsWithCreditsDto.class)).thenReturn(response);
+
+        MovieDetailDto result = tmdbService.getMovieDetail(1L);
+
+        assertThat(result.director()).isNull();
+    }
+
+    @Test
+    void getMovieDetail_nullCredits_directorIsNull() {
+        TmdbMovieDetailsWithCreditsDto response = new TmdbMovieDetailsWithCreditsDto(
+                1L, "No Credits", null, null, "overview", null);
+        when(responseSpec.body(TmdbMovieDetailsWithCreditsDto.class)).thenReturn(response);
+
+        MovieDetailDto result = tmdbService.getMovieDetail(1L);
+
+        assertThat(result.director()).isNull();
+    }
+
+    @Test
+    void getMovieDetail_nullBody_throwsServiceUnavailable() {
+        when(responseSpec.body(TmdbMovieDetailsWithCreditsDto.class)).thenReturn(null);
+
+        assertThatThrownBy(() -> tmdbService.getMovieDetail(550L))
+                .isInstanceOf(TmdbApiException.class)
+                .satisfies(ex -> assertThat(((TmdbApiException) ex).getStatus())
+                        .isEqualTo(HttpStatus.SERVICE_UNAVAILABLE));
+    }
+
+    @Test
+    void getMovieDetail_notFound_rethrowsMovieNotFoundException() {
+        MovieNotFoundException original = new MovieNotFoundException("Movie with TMDB ID 999 not found");
+        when(responseSpec.body(TmdbMovieDetailsWithCreditsDto.class)).thenThrow(original);
+
+        assertThatThrownBy(() -> tmdbService.getMovieDetail(999L))
+                .isSameAs(original);
     }
 }

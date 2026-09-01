@@ -33,21 +33,25 @@ public class SecurityConfig {
 
                 // Authorization rules
                 .authorizeHttpRequests(auth -> auth
-                        // Rutas de autenticación (API + vistas)
+                        // Auth routes (API + views)
                         .requestMatchers("/auth/**").permitAll()
 
-                        // Búsqueda (API + vista)
+                        // Search (API + view)
                         .requestMatchers("/movies/search").permitAll()
 
                         .requestMatchers("/movies/popular").permitAll()
 
-                        // Vistas Thymeleaf públicas
+                        // Public Thymeleaf views
                         .requestMatchers("/", "/login", "/register", "/search", "/watched").permitAll()
 
-                        // Recursos estáticos
+                        // Movie detail page (public view, accessible without login: bookmark, direct link, F5).
+                        // Single segment ("*", not "**"): the real route is /movie/{tmdbId}, no sub-routes.
+                        .requestMatchers("/movie/*").permitAll()
+
+                        // Static resources
                         .requestMatchers("/css/**", "/js/**", "/images/**").permitAll()
 
-                        // Todo lo demás requiere autenticación
+                        // Everything else requires authentication
                         .anyRequest().authenticated()
                 )
 

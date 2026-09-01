@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/layout :: head}">
+    <!-- Title is passed from the controller -->
+</head>
+
+<body>
+<!-- Icon sprite -->
+<svg th:replace="~{fragments/layout :: icon-sprite}"></svg>
+<!-- Navbar -->
+<nav th:replace="~{fragments/layout :: navbar}"></nav>
+
+<main class="movie-detail-container">
+    <div class="movie-detail-poster">
+        <img th:src="${movie.posterPath} ? 'https://image.tmdb.org/t/p/w400' + ${movie.posterPath} : @{/images/no-poster.jpg}"
+             th:alt="${movie.title}"
+             onerror="this.src='/images/no-poster.jpg'">
+    </div>
+
+    <div class="movie-detail-info">
+        <h1 th:text="${movie.title}">Título de la película</h1>
+
+        <div class="movie-detail-meta">
+            <span class="movie-detail-year" th:if="${movie.year}" th:text="${movie.year}">2020</span>
+            <span class="movie-detail-director" th:if="${movie.director}" th:text="'Dirigida por ' + ${movie.director}">Dirigida por</span>
+        </div>
+
+        <p class="movie-detail-overview"
+           th:text="${not #strings.isEmpty(movie.overview)} ? ${movie.overview} : 'Sinopsis no disponible.'">
+            Sinopsis de la película.
+        </p>
+
+        <button class="mark-watched-btn" th:attr="data-tmdb-id=${movie.tmdbId}">
+            <svg class="icon">
+                <use href="#icon-stamp"></use>
+            </svg>
+            Marcar como vista
+        </button>
+    </div>
+</main>
+
+<!-- Scripts -->
+<script th:replace="~{fragments/layout :: api-script}"></script>
+<script th:replace="~{fragments/layout :: app-script}"></script>
+<footer th:replace="~{fragments/layout :: footer}"></footer>
+
+</body>
+</html>

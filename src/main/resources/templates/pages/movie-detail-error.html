@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/layout :: head}">
+    <!-- Title is passed from the controller -->
+</head>
+
+<body>
+<!-- Navbar -->
+<nav th:replace="~{fragments/layout :: navbar}"></nav>
+
+<main class="movie-detail-error-container">
+    <h1>No se pudo mostrar esta película</h1>
+    <p th:text="${message}">No se pudo cargar la información de esta película.</p>
+    <a href="/search" class="btn-primary">Volver a la búsqueda</a>
+</main>
+
+<footer th:replace="~{fragments/layout :: footer}"></footer>
+
+</body>
+</html>
