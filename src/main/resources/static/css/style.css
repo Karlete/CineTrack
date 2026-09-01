@@ -190,7 +190,7 @@ nav a:hover {
 }
 
 .hero-actions {
-    margin-top: 1.25rem; /* antes 2rem */
+    margin-top: 1.25rem; /* previously 2rem */
     display: flex;
     gap: 1rem;
     justify-content: center;
@@ -235,7 +235,7 @@ nav a:hover {
     display: flex;
     gap: 1.5rem;
     overflow-x: auto;
-    padding: 0.5rem 0 1rem; /* antes solo padding-bottom: 1rem */
+    padding: 0.5rem 0 1rem; /* previously just padding-bottom: 1rem */
     scroll-snap-type: x mandatory;
 }
 
@@ -250,7 +250,7 @@ nav a:hover {
     border-radius: 12px;
     overflow: hidden;
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
-    border: 5px solid transparent; /* antes 2px */
+    border: 5px solid transparent; /* previously 2px */
     transition: transform 0.2s, border-color 0.2s;
 }
 
@@ -462,7 +462,7 @@ footer {
     top: 50%;
     transform: translateY(-50%);
     color: var(--color-text-secondary);
-    pointer-events: none; /* para que el icono no bloquee el click en el input */
+    pointer-events: none; /* so the icon doesn't block clicks on the input */
 }
 
 .search-placeholder {
@@ -542,11 +542,11 @@ footer {
     background-color: var(--color-background);
     background-image: linear-gradient(to bottom, rgba(15, 23, 42, 0.55), rgba(15, 23, 42, 0.85)),
     url('/images/login_background.jpg');
-    background-size: cover; /* antes: contain */
+    background-size: cover; /* previously: contain */
     background-position: center;
     background-repeat: no-repeat;
     filter: blur(2px);
-    transform: scale(1.05); /* antes: 1.02 — con cover otra vez necesitas ese margen extra para que el blur no deje ver el borde recortado */
+    transform: scale(1.05); /* previously: 1.02 — with cover you need that extra margin again so the blur doesn't reveal the cropped edge */
 }
 
 .auth-card {

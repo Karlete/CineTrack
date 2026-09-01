@@ -68,7 +68,7 @@ document.addEventListener('DOMContentLoaded', function () {
             heroUser.style.display = 'none';
             if (recentWatched) recentWatched.style.display = 'none';
 
-            // Cargar pósters populares de fondo para invitados
+            // Load popular posters as background for guests
             loadPopularMovies();
         }
     }
@@ -155,13 +155,13 @@ async function loadPopularMovies() {
 
         if (!movies || movies.length === 0) return;
 
-        // Tomamos los primeros 6 tal cual vienen de TMDB
+        // Take the first 6 exactly as they come from TMDB
         const popular = movies.slice(0, 6);
 
         renderHeroBackdrop(popular);
 
     } catch (error) {
         console.warn('Error al cargar películas populares:', error);
-        // No rompemos la home si TMDB falla
+        // Don't break the home page if TMDB fails
     }
 }

@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="es" xmlns:th="http://www.thymeleaf.org">
 <head th:replace="~{fragments/layout :: head}">
-    <!-- El título real se pasa desde el controller -->
+    <!-- The real title is passed from the controller -->
 </head>
 
 <body>
@@ -12,11 +12,11 @@
 
 <main class="home-container">
     <div class="hero">
-        <!-- Capas de fondo (puramente decorativas) -->
+        <!-- Background layers (purely decorative) -->
         <div class="hero-backdrop" aria-hidden="true"></div>
         <div class="hero-backdrop-posters" id="hero-backdrop-posters" aria-hidden="true"></div>
 
-        <!-- Contenido por encima del fondo -->
+        <!-- Content on top of the background -->
         <div class="hero-content">
             <div class="brand-title">
                 <img src="/images/cinetrack-icon-64.png" alt="" class="brand-icon">
@@ -28,14 +28,14 @@
                 y lleva un seguimiento de tu cine personal.
             </p>
 
-            <!-- Acciones para visitantes (sin login) -->
+            <!-- Actions for guests (not logged in) -->
             <div id="hero-guest" class="hero-actions">
                 <a href="/search" class="btn-primary">Buscar películas</a>
                 <a href="/login" class="btn-secondary">Iniciar sesión</a>
                 <a href="/register" class="btn-secondary">Crear cuenta</a>
             </div>
 
-            <!-- Acciones para usuarios logueados -->
+            <!-- Actions for logged-in users -->
             <div id="hero-user" class="hero-actions" style="display:none;">
                 <p id="hero-greeting"></p>
                 <a href="/search" class="btn-primary">Buscar películas</a>
@@ -44,7 +44,7 @@
         </div>
     </div>
 
-    <!-- Cómo funciona (solo visible para no logueados) -->
+    <!-- How it works (only visible to logged-out users) -->
     <section id="how-it-works">
         <h2>Cómo funciona CineTrack</h2>
         <div class="steps">
@@ -81,11 +81,11 @@
         </div>
     </section>
 
-    <!-- Vistas recientes (solo visible para logueados) -->
+    <!-- Recently watched (only visible to logged-in users) -->
     <section id="recent-watched" style="display:none;">
         <h2>Vistas Recientemente</h2>
         <div id="recent-watched-grid" class="recent-scroll">
-            <!-- JS lo rellena -->
+            <!-- JS fills this in -->
         </div>
     </section>
 </main>

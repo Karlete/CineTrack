@@ -36,8 +36,8 @@ import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.when;
 
 /**
- * MovieService no accede a SecurityContextHolder (recibe User explícito), lo que lo hace
- * directamente testeable con Mockito puro, sin necesidad de levantar contexto de Spring.
+ * MovieService never accesses SecurityContextHolder (it receives User explicitly), which makes
+ * it directly testable with plain Mockito, with no need to bootstrap a Spring context.
  */
 @ExtendWith(MockitoExtension.class)
 class MovieServiceTest {
@@ -177,7 +177,7 @@ class MovieServiceTest {
         when(watchedMovieRepository.findByUserAndMovie_TmdbId(user, TMDB_ID)).thenReturn(Optional.empty());
         when(watchedMovieRepository.save(any(WatchedMovie.class))).thenAnswer(invocation -> invocation.getArgument(0));
 
-        // No debe lanzar excepción aunque el parseo de la fecha falle (parseo defensivo)
+        // Must not throw even if date parsing fails (defensive parsing)
         WatchedMovieDto result = movieService.markAsWatched(TMDB_ID, user);
 
         assertThat(result.year()).isNull();
