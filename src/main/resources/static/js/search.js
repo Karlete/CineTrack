@@ -5,6 +5,7 @@
 const searchInput = document.getElementById('search-input');
 const searchButton = document.getElementById('search-button');
 const resultsContainer = document.getElementById('results');
+const searchContainer = document.querySelector('.search-container');
 
 // Trigger search when button is clicked or Enter is pressed
 searchButton.addEventListener('click', performSearch);
@@ -14,6 +15,33 @@ searchInput.addEventListener('keypress', function (e) {
         performSearch();
     }
 });
+
+loadPopularStrip();
+
+/**
+ * Fills the empty state (before the user searches anything) with a strip of
+ * currently popular movies instead of leaving it blank. Reuses GET
+ * /movies/popular (already used on the home page) — no new endpoint.
+ */
+async function loadPopularStrip() {
+    const container = document.getElementById('popular-grid');
+    if (!container) return;
+
+    try {
+        const movies = await api.get('/movies/popular');
+        if (!movies || movies.length === 0) return;
+
+        const watchedIds = await getWatchedIds();
+
+        container.innerHTML = movies
+            .map(movie => renderMovieCard(movie, watchedIds.has(movie.tmdbId)))
+            .join('');
+
+    } catch (error) {
+        console.warn('Error al cargar películas populares:', error);
+        // Don't break the search page if TMDB fails — just leave the section empty
+    }
+}
 
 async function performSearch() {
     const query = searchInput.value.trim();
@@ -65,8 +93,9 @@ function renderMovieCard(movie, isWatched) {
     `;
 }
 
-// Event delegation for "Mark as watched" buttons
-resultsContainer.addEventListener('click', async function (e) {
+// Event delegation for "Mark as watched" buttons — one listener on the
+// shared parent covers both #results (search) and #popular-grid (popular strip)
+searchContainer.addEventListener('click', async function (e) {
     const button = e.target.closest('.mark-watched-btn');
     if (!button) return;
 

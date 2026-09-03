@@ -475,16 +475,13 @@ footer {
     pointer-events: none; /* so the icon doesn't block clicks on the input */
 }
 
-.search-placeholder {
-    text-align: center;
-    padding: 4rem 2rem;
-    color: var(--color-text-secondary);
+.popular-section {
+    margin-top: 2.5rem;
 }
 
-.icon--xl {
-    width: 4rem;
-    height: 4rem;
-    margin-bottom: 1rem;
+.popular-section h2 {
+    margin-bottom: 1.25rem;
+    font-size: 1.4rem;
 }
 
 .search-hero {
@@ -496,15 +493,16 @@ footer {
     padding: 4rem 2rem;
 }
 
+/* Same diagonal-stripe + dot pattern as .hero-backdrop (home), not a photo —
+   a full-bleed blurred photo needs an image with no hard edges to begin with,
+   which search_background.jpg (a cinema-screen graphic) wasn't. */
 .search-hero-backdrop {
     position: absolute;
     inset: 0;
-    background-image: linear-gradient(to bottom, rgba(15, 23, 42, 0.65), rgba(15, 23, 42, 0.95)),
-    url('/images/search_background.jpg');
-    background-size: cover;
-    background-position: center;
-    filter: blur(2px);
-    transform: scale(1.05);
+    background-image: repeating-linear-gradient(135deg, var(--color-primary) 0px, var(--color-primary) 1px, transparent 1px, transparent 48px),
+    radial-gradient(var(--color-border) 1.5px, transparent 1.5px);
+    background-size: auto, 28px 28px;
+    opacity: 0.07;
     z-index: 0;
 }
 
@@ -646,6 +644,66 @@ footer {
     align-items: center;
     justify-content: center;
     min-height: 70vh;
+}
+
+/* Movie detail page — same card language as .auth-card / .movie-card
+   (--color-surface, 12px radius, soft shadow) instead of a new pattern. */
+.movie-detail-container {
+    margin-top: 25px;
+    display: grid;
+    grid-template-columns: 320px 1fr;
+    gap: 2.5rem;
+    align-items: start;
+    background-color: var(--color-surface);
+    border: 1px solid var(--color-border);
+    border-radius: 12px;
+    padding: 2.5rem;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.3);
+}
+
+.movie-detail-poster img {
+    width: 100%;
+    border-radius: 8px;
+    display: block;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+}
+
+.movie-detail-info h1 {
+    font-size: 2.2rem;
+    margin-bottom: 0.75rem;
+}
+
+.movie-detail-meta {
+    display: flex;
+    gap: 1rem;
+    flex-wrap: wrap;
+    align-items: baseline;
+    color: var(--color-text-secondary);
+    margin-bottom: 1.25rem;
+}
+
+.movie-detail-year {
+    font-weight: 600;
+    color: var(--color-primary);
+}
+
+.movie-detail-overview {
+    color: var(--color-text-secondary);
+    margin-bottom: 1.5rem;
+    line-height: 1.7;
+}
+
+@media (max-width: 768px) {
+    .movie-detail-container {
+        grid-template-columns: 1fr;
+        padding: 1.5rem;
+        gap: 1.5rem;
+    }
+
+    .movie-detail-poster img {
+        max-width: 280px;
+        margin: 0 auto;
+    }
 }
 
 .register-backdrop {
