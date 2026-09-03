@@ -33,7 +33,7 @@ build/
 .vscode/
 
 ### Aplication properties ###
-/src/main/resources/application.properties
+/src/main/resources/application-local.properties
 /src/main/resources/cinetrack_architecture.png
 
 ### MD
