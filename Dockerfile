@@ -41,6 +41,12 @@ USER cinetrack
 # cinetrack-<version>.jar segun el pom, y no quiero tener que tocar el
 # Dockerfile cada vez que suba la version. El .jar.original que deja el
 # plugin de Spring Boot no casa con *.jar, asi que solo hay un match.
+#
+# CUIDADO: esto depende de que target/ contenga un unico .jar. Hoy se
+# cumple: el maven-dependency-plugin del pom solo ejecuta el goal
+# "properties" (expone rutas del ~/.m2 como propiedades para el -javaagent
+# de Mockito en Surefire) y no copia nada. Si algun dia se le anade
+# copy-dependencies, habra mas de un .jar y este COPY fallara.
 COPY --from=build --chown=cinetrack:cinetrack /app/target/*.jar app.jar
 
 # Documental: Render publica el puerto que el mismo inyecta en $PORT, y
