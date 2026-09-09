@@ -5,6 +5,7 @@ import com.cinetrack.dto.LoginResponse;
 import com.cinetrack.dto.RegisterRequest;
 import com.cinetrack.dto.RegisterResponse;
 import com.cinetrack.services.AuthService;
+import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -28,7 +29,7 @@ public class AuthController {
      * Returns 201 Created on success.
      */
     @PostMapping("/register")
-    public ResponseEntity<RegisterResponse> register(@RequestBody RegisterRequest request) {
+    public ResponseEntity<RegisterResponse> register(@Valid @RequestBody RegisterRequest request) {
         RegisterResponse response = authService.register(request);
         return new ResponseEntity<>(response, HttpStatus.CREATED);
     }
@@ -38,7 +39,7 @@ public class AuthController {
      * Returns 200 OK with the token on successful login.
      */
     @PostMapping("/login")
-    public ResponseEntity<LoginResponse> login(@RequestBody LoginRequest request) {
+    public ResponseEntity<LoginResponse> login(@Valid @RequestBody LoginRequest request) {
         LoginResponse response = authService.login(request);
         return ResponseEntity.ok(response);
     }

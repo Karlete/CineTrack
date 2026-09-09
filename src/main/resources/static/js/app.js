@@ -67,10 +67,13 @@ document.addEventListener('DOMContentLoaded', function () {
             // Not logged in
             heroUser.style.display = 'none';
             if (recentWatched) recentWatched.style.display = 'none';
-
-            // Load popular posters as background for guests
-            loadPopularMovies();
         }
+
+        // Hero backdrop is purely decorative — always the popular-movies strip,
+        // for both guests and logged-in users. Not tied to loadRecentWatched()
+        // because a user with few or no watched movies would otherwise get no
+        // background at all.
+        loadPopularMovies();
     }
 });
 
@@ -109,16 +112,13 @@ async function loadRecentWatched() {
             .sort((a, b) => new Date(b.watchedAt) - new Date(a.watchedAt))
             .slice(0, 5);
 
-        // Render background
-        renderHeroBackdrop(recent);
-
         container.innerHTML = recent.map(movie => `
             <div class="movie-card" data-tmdb-id="${movie.tmdbId}">
                 <a class="movie-card-link" href="/movie/${movie.tmdbId}">
-                    <img src="https://image.tmdb.org/t/p/w200${movie.posterPath}"
-                         alt="${movie.title}"
+                    <img src="https://image.tmdb.org/t/p/w200${escapeHtml(movie.posterPath)}"
+                         alt="${escapeHtml(movie.title)}"
                          onerror="this.src='/images/no-poster.jpg'">
-                    <h3>${movie.title}</h3>
+                    <h3>${escapeHtml(movie.title)}</h3>
                 </a>
                 <p>${movie.year || 'Sin fecha'}</p>
             </div>
@@ -141,7 +141,7 @@ function renderHeroBackdrop(movies) {
     if (validPosters.length === 0) return;
 
     backdrop.innerHTML = validPosters.map(m =>
-        `<img src="https://image.tmdb.org/t/p/w200${m.posterPath}" alt="">`
+        `<img src="https://image.tmdb.org/t/p/w200${escapeHtml(m.posterPath)}" alt="">`
     ).join('');
 
     backdrop.classList.add('visible');

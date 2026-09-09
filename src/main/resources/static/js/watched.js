@@ -29,10 +29,10 @@ async function loadWatchedMovies() {
         resultsContainer.innerHTML = movies.map(movie => `
             <div class="movie-card" data-tmdb-id="${movie.tmdbId}">
                 <a class="movie-card-link" href="/movie/${movie.tmdbId}">
-                    <img src="https://image.tmdb.org/t/p/w200${movie.posterPath}"
-                         alt="${movie.title}"
+                    <img src="https://image.tmdb.org/t/p/w200${escapeHtml(movie.posterPath)}"
+                         alt="${escapeHtml(movie.title)}"
                          onerror="this.src='/images/no-poster.jpg'">
-                    <h3>${movie.title}</h3>
+                    <h3>${escapeHtml(movie.title)}</h3>
                 </a>
                 <p>${movie.year || 'Sin fecha'}</p>
                 <p class="watched-date">Vista el: ${new Date(movie.watchedAt).toLocaleDateString()}</p>
@@ -43,7 +43,7 @@ async function loadWatchedMovies() {
         `).join('');
 
     } catch (error) {
-        resultsContainer.innerHTML = `<p class="error">${error.message}</p>`;
+        resultsContainer.innerHTML = `<p class="error">${escapeHtml(error.message)}</p>`;
     }
 }
 

@@ -87,6 +87,22 @@ async function getWatchedIds() {
 const WATCHED_LABEL = '✓ Vista';
 
 /**
+ * Escapes text that gets interpolated into an innerHTML template literal.
+ * Needed anywhere movie data from TMDB (title, posterPath) or an API error
+ * message is placed into HTML/attribute context — those values are outside
+ * our control and must never be trusted as safe markup.
+ */
+function escapeHtml(value) {
+    if (value === null || value === undefined) return '';
+    return String(value)
+        .replaceAll('&', '&amp;')
+        .replaceAll('<', '&lt;')
+        .replaceAll('>', '&gt;')
+        .replaceAll('"', '&quot;')
+        .replaceAll("'", '&#39;');
+}
+
+/**
  * Applies the "already watched" visual state to a mark-watched button.
  * Shared by search.js and movie-detail.js so these two lines don't drift
  * into three slightly different copies again.
@@ -121,6 +137,12 @@ async function handleResponse(response) {
             // Ignore if can't parse JSON
         }
         throw new Error(errorMessage);
+    }
+
+    // 204 No Content (e.g. DELETE /movies/{tmdbId}/watched) has no body —
+    // calling .json() on it throws "Unexpected end of JSON input".
+    if (response.status === 204) {
+        return null;
     }
 
     return response.json();
