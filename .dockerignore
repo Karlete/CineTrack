@@ -1,0 +1,17 @@
+# Contexto de build minimo: todo lo que no haga falta para compilar
+# alarga el envio al daemon y puede acabar dentro de la imagen.
+.git
+.gitignore
+.idea
+target/
+*.iml
+
+# Critico: si alguien construye la imagen en su maquina, este fichero
+# existe en su working tree (esta gitignoreado, no borrado) y acabaria
+# empaquetado dentro del JAR con sus secretos reales.
+src/main/resources/application-local.properties
+
+README.md
+HELP.md
+task.md
+*.md
