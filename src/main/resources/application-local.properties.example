@@ -3,9 +3,9 @@
 # (variable de entorno en la run configuration de IntelliJ). Solo sobrescribe
 # lo que difiere de application.properties (config base / produccion).
 
-spring.datasource.url=jdbc:postgresql://localhost:5432/cinetrack_dev
-spring.datasource.username=your local db user
-spring.datasource.password=your local db password
+# La URL lleva usuario y contrasena dentro, igual que la DATABASE_URL de
+# produccion: asi local y produccion se configuran de la misma forma.
+spring.datasource.url=jdbc:postgresql://localhost:5432/cinetrack_dev?user=your_local_db_user&password=your_local_db_password
 
 spring.jpa.show-sql=true
 logging.level.org.hibernate.type.descriptor.sql.BasicBinder=TRACE

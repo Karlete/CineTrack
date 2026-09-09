@@ -25,8 +25,8 @@ Spring Data JPA, PostgreSQL and Thymeleaf.
    DB credentials, a JWT secret and your TMDB API key. This file is
    gitignored — it's never committed.
 3. Activate the `local` Spring profile, otherwise the app tries to resolve
-   `${PGHOST}`, `${JWT_SECRET}`, etc. from the environment (the production
-   config) and fails to start. Set it as an environment variable:
+   `${DATABASE_URL}`, `${JWT_SECRET}`, etc. from the environment (the
+   production config) and fails to start. Set it as an environment variable:
 
    ```
    SPRING_PROFILES_ACTIVE=local
@@ -41,6 +41,16 @@ Spring Data JPA, PostgreSQL and Thymeleaf.
    should see a log line like `The following 1 profile is active: "local"`.
 
 `src/main/resources/application.properties` is the base/production config —
-it only reads values from environment variables (`PGHOST`, `PGPORT`,
-`PGDATABASE`, `PGUSER`, `PGPASSWORD`, `JWT_SECRET`, `TMDB_API_KEY`) with no
-defaults, so it's safe to commit and never needs editing for local dev.
+it only reads values from environment variables (`DATABASE_URL`,
+`JWT_SECRET`, `TMDB_API_KEY`) with no defaults, so it's safe to commit and
+never needs editing for local dev.
+
+`DATABASE_URL` is the full JDBC connection string, credentials included —
+the format Neon hands you under *Connect* → *Java / JDBC*:
+
+```
+jdbc:postgresql://<host>/<database>?user=<user>&password=<password>&sslmode=require
+```
+
+It must start with `jdbc:` — the bare `postgresql://user:pass@host/db` form
+some providers show by default is not a JDBC URL and Hikari will reject it.
