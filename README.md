@@ -4,6 +4,9 @@
 
 Es un proyecto de portfolio hecho con Spring Boot (Java 21), pensado para ser pequeño pero cuidado de principio a fin: backend limpio, seguridad en condiciones y un frontend que no da vergüenza enseñar.
 
+**🔗 Demo en vivo: [cinetrack-qdnr.onrender.com](https://cinetrack-qdnr.onrender.com/)**
+_(está en el plan gratuito de Render, así que si nadie la ha visitado en un rato la primera carga puede tardar unos 30-50 segundos en "despertar" — luego va fluida)._
+
 ## ✨ Qué hace
 
 - **Registro y login** con JWT (sin sesiones, sin cookies raras, todo *stateless*).
