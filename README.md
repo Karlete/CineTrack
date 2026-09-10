@@ -7,6 +7,8 @@ Es un proyecto de portfolio hecho con Spring Boot (Java 21), pensado para ser pe
 **🔗 Demo en vivo: [cinetrack-qdnr.onrender.com](https://cinetrack-qdnr.onrender.com/)**
 _(está en el plan gratuito de Render, así que si nadie la ha visitado en un rato la primera carga puede tardar unos 30-50 segundos en "despertar" — luego va fluida)._
 
+**📦 Código fuente: [github.com/Karlete/CineTrack](https://github.com/Karlete/CineTrack)**
+
 ## ✨ Qué hace
 
 - **Registro y login** con JWT (sin sesiones, sin cookies raras, todo *stateless*).
@@ -90,9 +92,19 @@ rechazará.
 
 ## ☁️ Despliegue
 
-Preparada para desplegarse en **Render** vía Docker: build multi-etapa,
-puerto tomado de `$PORT`, y JVM ajustada con `MaxRAMPercentage` para no
-desperdiciar memoria en instancias pequeñas.
+La app corre en **Render** (Frankfurt) y la base de datos en **Neon** (Londres),
+en dos proveedores distintos a propósito: el Postgres gratuito de Render caduca
+a los 30 días (te borra la base de datos y hay que empezar de cero), mientras que
+Neon ofrece un Postgres gratuito persistente sin fecha de caducidad. Separar app y
+BD también significa que puedo redesplegar o incluso cambiar de proveedor de
+hosting para la app sin arrastrar los datos con ella — la `DATABASE_URL` es solo
+una variable de entorno más.
+
+El despliegue en sí va vía Docker: build multi-etapa (JDK para compilar, JRE para
+ejecutar), puerto tomado de `$PORT`, y JVM ajustada con `MaxRAMPercentage` para no
+desperdiciar memoria en una instancia pequeña. El plan gratuito de Render "duerme"
+la app tras un rato de inactividad (de ahí el cold start de la demo), pero eso solo
+afecta al proceso — al estar en Neon, la base de datos sigue ahí, despierta o no.
 
 ## 📄 Licencia
 
